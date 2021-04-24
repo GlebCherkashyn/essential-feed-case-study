@@ -122,37 +122,28 @@ final class CacheFeedUseCaseTests: XCTestCase {
     let (store, sut) = makeSUT()
     let deletionError = anyNSError()
     
-    expect(
-      sut,
-      toCompleteWith: deletionError,
-      when: {
-        store.completeDeletion(with: deletionError)
-      })
+    expect(sut, toCompleteWith: deletionError, when: {
+      store.completeDeletion(with: deletionError)
+    })
   }
   
   func test_save_failsOnInsertionError() {
     let (store, sut) = makeSUT()
     let insertionError = anyNSError()
     
-    expect(
-      sut,
-      toCompleteWith: insertionError,
-      when: {
-        store.completeDeletionSuccessfully()
-        store.completeInsertion(with: insertionError)
-      })
+    expect(sut, toCompleteWith: insertionError, when: {
+      store.completeDeletionSuccessfully()
+      store.completeInsertion(with: insertionError)
+    })
   }
   
   func test_save_succeedsOnSuccessfulCacheInsertion() {
     let (store, sut) = makeSUT()
     
-    expect(
-      sut,
-      toCompleteWith: nil,
-      when: {
-        store.completeDeletionSuccessfully()
-        store.completeInsertionSuccessfully()
-      })
+    expect(sut, toCompleteWith: nil, when: {
+      store.completeDeletionSuccessfully()
+      store.completeInsertionSuccessfully()
+    })
   }
   
   // MARK: - Helpers
