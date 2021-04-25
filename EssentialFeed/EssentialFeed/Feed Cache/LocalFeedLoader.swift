@@ -14,6 +14,8 @@ public final class LocalFeedLoader {
   
   private let store: FeedStore
   private let currentDate: () -> Date
+  private let calendar = Calendar.current
+  private var maxCacheAgeInDays = 7
   
   public init(store: FeedStore, currentDate: @escaping () -> Date) {
     self.store = store
@@ -55,8 +57,7 @@ public final class LocalFeedLoader {
   }
   
   private func validate(_ timestamp: Date) -> Bool {
-    let calendar = Calendar.current
-    guard let maxCacheAge = calendar.date(byAdding: .day, value: 7, to: timestamp) else {
+    guard let maxCacheAge = calendar.date(byAdding: .day, value: maxCacheAgeInDays, to: timestamp) else {
       return false
     }
     
