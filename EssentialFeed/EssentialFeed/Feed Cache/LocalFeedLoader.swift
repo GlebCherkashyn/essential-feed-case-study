@@ -43,6 +43,8 @@ public final class LocalFeedLoader {
         completion(.failure(error))
         return
       }
+      
+      completion(.success([]))
     }
   }
 }
