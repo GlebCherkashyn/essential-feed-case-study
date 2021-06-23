@@ -12,12 +12,34 @@ import XCTest
 final class CodableFeedStore {
 	private struct Cache: Codable {
 		
-		let feed: [LocalFeedImage]
+		let feed: [CodableFeedImage]
 		let timestamp: Date
 		
-		init(_ feed: [LocalFeedImage], _ timestamp: Date) {
+		var localFeed: [LocalFeedImage] {
+			feed.map { $0.local }
+		}
+		
+		init(_ feed: [CodableFeedImage], _ timestamp: Date) {
 			self.feed = feed
 			self.timestamp = timestamp
+		}
+	}
+	
+	private struct CodableFeedImage: Codable {
+		let id: UUID
+		let description: String?
+		let location: String?
+		let url: URL
+		
+		var local: LocalFeedImage {
+			.init(id: id, description: description, location: location, url: url)
+		}
+		
+		init(_ image: LocalFeedImage) {
+			id = image.id
+			description = image.description
+			location = image.location
+			url = image.url
 		}
 	}
 	
@@ -31,14 +53,14 @@ final class CodableFeedStore {
 		let decoder = JSONDecoder()
 		let cache = try! decoder.decode(Cache.self, from: data)
 		
-		completion(.found(feed: cache.feed, timestamp: cache.timestamp))
+		completion(.found(feed: cache.localFeed, timestamp: cache.timestamp))
 	}
 	
 	func insert(_ feed: [LocalFeedImage],
 							timestamp: Date,
 							completion: @escaping FeedStore.InsertionCompletion) {
 		let encoder = JSONEncoder()
-		let encoded = try! encoder.encode(Cache(feed, timestamp))
+		let encoded = try! encoder.encode(Cache(feed.map { CodableFeedImage($0) }, timestamp))
 		try! encoded.write(to: storeURL)
 		completion(nil)
 	}
