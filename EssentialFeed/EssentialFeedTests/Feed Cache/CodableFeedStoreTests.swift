@@ -120,17 +120,18 @@ final class CodableFeedStoreTests: XCTestCase {
 	}
 	
 	func test_retrieve_deliversFailureOnRetrievalError() {
-		let sut = makeSUT()
+		let storeURL = Self.testSpecificStoreURL
+		let sut = makeSUT(storeURL: storeURL)
 		
-		try! "invalid data".write(to: testSpecificStoreURL, atomically: false, encoding: .utf8)
+		try! "invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
 		
 		expect(sut, toRetrieve: .failure(anyNSError()))
 	}
 	
 	// MARK: - Helpers
 	
-	private func makeSUT() -> CodableFeedStore {
-		let sut = CodableFeedStore(storeURL: testSpecificStoreURL)
+	private func makeSUT(storeURL: URL = testSpecificStoreURL) -> CodableFeedStore {
+		let sut = CodableFeedStore(storeURL: storeURL)
 		trackForMemoryLeaks(sut)
 		
 		return sut
@@ -179,7 +180,7 @@ final class CodableFeedStoreTests: XCTestCase {
 		wait(for: [exp], timeout: 1)
 	}
 	
-	private let testSpecificStoreURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
+	private static let testSpecificStoreURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
 	
 	private func setupEmptyStoreState() {
 		deleteStoreArtifacts()
@@ -190,6 +191,6 @@ final class CodableFeedStoreTests: XCTestCase {
 	}
 	
 	private func deleteStoreArtifacts() {
-		try? FileManager.default.removeItem(at: testSpecificStoreURL)
+		try? FileManager.default.removeItem(at: Self.testSpecificStoreURL)
 	}
 }
